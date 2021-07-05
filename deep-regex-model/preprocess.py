@@ -41,14 +41,14 @@ class Indexer:
         
     def write(self, outfile):
         out = open(outfile, "w")
-        items = [(v, k) for k, v in self.d.iteritems()]
+        items = [(v, k) for k, v in self.d.items()]
         items.sort()
         for v, k in items:
-            print >>out, k.encode('utf-8'), v
+            print((out, k.encode('utf-8'), v))
         out.close()
 
     def prune_vocab(self, k):
-        vocab_list = [(word, count) for word, count in self.vocab.iteritems()]
+        vocab_list = [(word, count) for word, count in self.vocab.items()]
         vocab_list.sort(key = lambda x: x[1], reverse=True)
         k = min(k, len(vocab_list))
         self.pruned_vocab = {pair[0]:pair[1] for pair in vocab_list[:k]}
@@ -76,9 +76,9 @@ def get_data(args):
     def make_vocab(srcfile, targetfile, seqlength, max_word_l=0, chars=0):
         num_sents = 0
         for _, (src_orig, targ_orig) in \
-                enumerate(itertools.izip(open(srcfile,'r'), open(targetfile,'r'))):
-            src_orig = src_indexer.clean(src_orig.decode("utf-8").strip())
-            targ_orig = target_indexer.clean(targ_orig.decode("utf-8").strip())
+                enumerate(zip(open(srcfile,'r'), open(targetfile,'r'))):
+            src_orig = src_indexer.clean(src_orig.strip())
+            targ_orig = target_indexer.clean(targ_orig.strip())
             targ = targ_orig.strip().split()
             src = src_orig.strip().split()
             if len(targ) > seqlength or len(src) > seqlength or len(targ) < 1 or len(src) < 1:
@@ -121,9 +121,9 @@ def get_data(args):
         dropped = 0
         sent_id = 0
         for _, (src_orig, targ_orig) in \
-                enumerate(itertools.izip(open(srcfile,'r'), open(targetfile,'r'))):
-            src_orig = src_indexer.clean(src_orig.decode("utf-8").strip())
-            targ_orig = target_indexer.clean(targ_orig.decode("utf-8").strip())
+                enumerate(zip(open(srcfile,'r'), open(targetfile,'r'))):
+            src_orig = src_indexer.clean(src_orig.strip())
+            targ_orig = target_indexer.clean(targ_orig.strip())
             targ = [target_indexer.BOS] + targ_orig.strip().split() + [target_indexer.EOS]
             src =  [src_indexer.BOS] + src_orig.strip().split() + [src_indexer.EOS]
             max_sent_l = max(len(targ), len(src), max_sent_l)
